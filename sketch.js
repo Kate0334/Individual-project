@@ -7,6 +7,12 @@ let kCircle = [];
 let rotAngles = [0, 0, 0, 0];
 let stepInterval = 100;
 
+//update for automatic appearing
+let timer = 0;
+let currentStep = 0;
+let totalStep = 6;
+let timeInterval = 5000;//5 seconds
+
 let concentricCircles = []; // Array to store concentric circles
 let whiteDotLayers = [];
 let yellowDotLayers = [];
@@ -357,31 +363,70 @@ class WhiteDotLayers {
 function draw() {
   background(255);
 
-  // Draw big circles
-  for (let circle of bigCircles) {
-    circle.display();
+  //check time interval has passed
+  //I calculated the increment of timer:
+  //draw() is called 60 times per second,
+  //the timer is incremented by x*60 in every calling of draw(),
+  //which means that to reach every second (1000ms),
+  //the increment of time x = 1000/60 ≈ 16.7ms could be the real-world time,
+  //however, I found deltaTime in p5.js(https://p5js.org/reference/p5/deltaTime/) so I changed it
+  //but I believe my calculation is correct:)
+  //timer += 16.7; 
+  timer += deltaTime;
+
+  //every 5 seconds, move to the next step
+  //and reset timer
+  if(timer > timeInterval){
+    currentStep = currentStep + 1;
+    timer = 0;
   }
 
+  //reset all step after totalstep finished
+  if(currentStep > totalStep){
+    currentStep = 0;
+  }
+
+  //sequences of pattern elements
+  if(currentStep >= 0){
+    // Draw big circles
+    for (let circle of bigCircles) {
+      circle.display();
+  }
+}
+
+  if(currentStep >= 1){
    //draw the dottedline circles
    for(let kcircles of kCircle){
     kcircles.display();
   }
+}
 
-  // Draw small stroke circles on top
-  for (let smallCircle of smallStrokeCircles) {
-    smallCircle.draw();
-  }
+  if(currentStep >= 2){
   // Draw concentric circles
   for (let concentric of concentricCircles) {
     concentric.display();
   }
+}
 
+  if(currentStep >= 3){
+  // Draw small stroke circles on top
+  for (let smallCircle of smallStrokeCircles) {
+    smallCircle.draw();
+  }
+}
+
+  if(currentStep >= 4){
   for (let dotLayer of whiteDotLayers){ dotLayer.display();
   }
+}
+  if(currentStep >= 5){
   // Draw yellow dot layers
   for (let dotLayer of yellowDotLayers) {dotLayer.display();
   }
 }
+}
+
+
 
 function windowResized() {
   resizeCanvas(windowWidth, windowHeight);
