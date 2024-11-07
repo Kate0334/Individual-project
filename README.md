@@ -1,7 +1,8 @@
 # Individual-project
-**Note: The group woek has not been finished completely yet, everyone maybe add some ditails to perfect the work,
+**Note: The group work has not been finished completely yet, everyone maybe add some ditails to perfect the work,
 so I started parts of my individual work based on the progress of the group work to ensure I can submit on time.
-Eventually, my individual task will contain the completed group project coding**
+Eventually, my individual task will contain the completed group project coding. The changes I made are explained here.**
+
 
 **Link of group project:**
 https://github.com/rasu0036/Group-B.git
