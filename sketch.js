@@ -12,6 +12,7 @@ let timer = 0;
 let currentStep = 0;
 let totalStep = 6;
 let timeInterval = 5000;//5 seconds
+let mouseClick = false;
 
 let concentricCircles = []; // Array to store concentric circles
 let whiteDotLayers = [];
@@ -143,31 +144,35 @@ kCircle = [
     new SmallStrokeCircle(bigCircles[11], r * 0.2, null, color('#DDD64E'), 8, false, true), //  circle 12
    
     ];
+
     whiteDotLayers = [
-      new WhiteDotLayers(bigCircles[2], 3, 18),
-      new WhiteDotLayers(bigCircles[4], 3, 18),
-      new WhiteDotLayers(bigCircles[9], 3, 12),
-      new WhiteDotLayers(bigCircles[0], 3, 12),
-      new WhiteDotLayers(bigCircles[14], 3, 12)
+      new WhiteDotLayers(bigCircles[5], 3, 18),
+      new WhiteDotLayers(bigCircles[7], 3, 12),
+      new WhiteDotLayers(bigCircles[9], 3, 12)
     ]
    yellowDotLayers = [
-      new YellowDotLayers(bigCircles[1], 3, 16),
-      new YellowDotLayers(bigCircles[10], 3, 16),
-      new YellowDotLayers(bigCircles[12], 3, 16),]
+      new YellowDotLayers(bigCircles[0], 3, 12),
+      new YellowDotLayers(bigCircles[2], 3, 14),
+      new YellowDotLayers(bigCircles[1], 4, 16),
+      new YellowDotLayers(bigCircles[4], 3, 12),
+      new YellowDotLayers(bigCircles[6], 4, 18),
+      new YellowDotLayers(bigCircles[12], 3, 16),
+      new YellowDotLayers(bigCircles[14], 4, 12),]
 
   // Define color palettes for concentric circles
   let concentricFiveLayerColors = [color('#199646'), color('#DF3E86'), color('#0C63AD'), color('#FDCE23'), color('#BFC3BF')];
-  let concentricThreeLayerColors = [color('#BFC3BF'), color('#FDCE23'), color('#0C63AD')];
+  let concentricThreeLayerColors1 = [color('#BFC3BF'), color('#FDCE23'), color('#DF3E86')];
+  let concentricThreeLayerColors2 = [color('#BFC3BF'), color('#FDCE23'), color('#0C63AD')];
 
   // Initialize concentric circles for bigCircles[3] and bigCircles[4]
-  concentricCircles.push(new ConcentricCircle(bigCircles[1], concentricFiveLayerColors));
+  concentricCircles.push(new ConcentricCircle(bigCircles[0], concentricFiveLayerColors));
+  concentricCircles.push(new ConcentricCircle(bigCircles[2], concentricFiveLayerColors));
   concentricCircles.push(new ConcentricCircle(bigCircles[3], concentricFiveLayerColors));
-  concentricCircles.push(new ConcentricCircle(bigCircles[4], concentricFiveLayerColors));
-  concentricCircles.push(new ConcentricCircle(bigCircles[7], concentricFiveLayerColors));
+  concentricCircles.push(new ConcentricCircle(bigCircles[6], concentricFiveLayerColors));
+  concentricCircles.push(new ConcentricCircle(bigCircles[12], concentricFiveLayerColors));
   concentricCircles.push(new ConcentricCircle(bigCircles[13], concentricFiveLayerColors));
-  concentricCircles.push(new ConcentricCircle(bigCircles[14], concentricFiveLayerColors));
-  concentricCircles.push(new ConcentricCircle(bigCircles[9], concentricThreeLayerColors));
-  concentricCircles.push(new ConcentricCircle(bigCircles[11], concentricThreeLayerColors));
+  concentricCircles.push(new ConcentricCircle(bigCircles[8], concentricThreeLayerColors1));
+  concentricCircles.push(new ConcentricCircle(bigCircles[10], concentricThreeLayerColors2));
 
   // Set up automatic rotation for layers
   setInterval(autoClock, stepInterval);
@@ -287,7 +292,7 @@ drawDashedCircle(x, y, diameter) {
 
 // ConcentricCircle class with multiple layers and colors
 class ConcentricCircle {
-  constructor(parentCircle, colors) {
+  constructor(parentCircle, colors) {0
     this.parentCircle = parentCircle; // Associate with bigCircle
     this.colors = colors;
   }
@@ -310,27 +315,28 @@ class ConcentricCircle {
 
 // White dot layers class
 class WhiteDotLayers {
-    constructor(bigCircle, numLayers, numDots) {
-      this.bigCircle = bigCircle;
-      this.numLayers = numLayers;
-      this.numDots = numDots;
-    }
-    display() {
-      let x = width * this.bigCircle.xScale;
-      let y = height * this.bigCircle.yScale;
-      for (let layer = 1; layer <= this.numLayers; layer++) {
-        let radius = 50 + (layer * 40);
-        for (let i = 0; i < this.numDots; i++) {
-          let angle = TWO_PI / this.numDots * i;
-          let dotX = x + radius * cos(angle);
-          let dotY = y + radius * sin(angle);
-          fill(255);
-          noStroke();
-          ellipse(dotX, dotY, 25);
-        }
+  constructor(bigCircle, numLayers, numDots) {
+    this.bigCircle = bigCircle;
+    this.numLayers = numLayers;
+    this.numDots = numDots;
+   
+  }
+  display() {
+    let x = width * this.bigCircle.xScale;
+    let y = height * this.bigCircle.yScale;
+    for (let layer = 1; layer <= this.numLayers; layer++) {
+      let radius = this.bigCircle.r * 0.3 + layer * 30;
+      for (let i = 0; i < this.numDots; i++) {
+        let angle = TWO_PI / this.numDots * i;
+        let dotX = x + radius * cos(angle);
+        let dotY = y + radius * sin(angle);
+        fill(255);
+        noStroke();
+        ellipse(dotX, dotY, 20);
       }
     }
   }
+}
 
   // Yellow dot layers class
   class YellowDotLayers {
@@ -338,10 +344,8 @@ class WhiteDotLayers {
       this.bigCircle = bigCircle;
       this.numLayers = numLayers;
       this.numDots = numDots;
+      
     }
-  
-  
-  
   
     display() {
       let x = width * this.bigCircle.xScale;
@@ -349,7 +353,7 @@ class WhiteDotLayers {
       fill('#fabd4d');
       noStroke();
       for (let layer = 1; layer <= this.numLayers; layer++) {
-        let radius = 50 + (layer * 40);
+        let radius = this.bigCircle.r * 0.20 + layer * 30;
         for (let i = 0; i < this.numDots; i++) {
           let angle = TWO_PI / this.numDots * i;
           let dotX = x + radius * cos(angle);
@@ -362,7 +366,8 @@ class WhiteDotLayers {
 
 function draw() {
   background(255);
-
+  
+  if(mouseClick){
   //check time interval has passed
   //I calculated the increment of timer:
   //draw() is called 60 times per second,
@@ -385,6 +390,7 @@ function draw() {
   if(currentStep > totalStep){
     currentStep = 0;
   }
+}
 
   //sequences of pattern elements
   if(currentStep >= 0){
@@ -416,12 +422,14 @@ function draw() {
 }
 
   if(currentStep >= 4){
-  for (let dotLayer of whiteDotLayers){ dotLayer.display();
+  for (let dotLayer of whiteDotLayers){ 
+    dotLayer.display();
   }
 }
   if(currentStep >= 5){
   // Draw yellow dot layers
-  for (let dotLayer of yellowDotLayers) {dotLayer.display();
+  for (let dotLayer of yellowDotLayers) {
+    dotLayer.display();
   }
 }
 }
@@ -440,3 +448,8 @@ function autoClock(){
   rotAngles[3] += 0.025;
 }
 
+function mousePressed(){
+  if(!mouseClick){
+    mouseClick = true;
+  }
+}

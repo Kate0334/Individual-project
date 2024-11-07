@@ -1,24 +1,24 @@
-//The group woek has not been finished yet, so I start parts of my individual work based on the progress of the group work
-//or I will be late for the submission
-
-//My individual task: Time-Based
-//First, I created ratations with 4 layers of dottedline circles by setInterval() taught in tutorial 5
-// each layer rotates at different speed
-
-
-
 let colors = [];
 let bigCircles = [];
 let smallStrokeCircles = [];
 let kpatternColors = [];
 let kCircle = [];
-let concentricCircles = [];
 //initial angle for each layer
 let rotAngles = [0, 0, 0, 0];
 let stepInterval = 100;
 
+//update for automatic appearing
+let timer = 0;
+let currentStep = 0;
+let totalStep = 6;
+let timeInterval = 5000;//5 seconds
 
-// Set up the canvas and initialize circles
+let concentricCircles = []; // Array to store concentric circles
+let whiteDotLayers = [];
+let yellowDotLayers = [];
+
+
+
 function setup() {
   createCanvas(windowWidth, windowHeight);
   
@@ -42,11 +42,15 @@ colors = [
   color('#FDCE23')//16 d
  ];
 
-  // Calculate radius based on canvas size
+  //calculate radius based on canvas size
   let r = min(width, height) * 0.35;
 
-  // Initialize big circles
+  //I added all circles in the array
+  //if want to use the position values, write "width * bigCircles[0].xScale"(or specific value directly) and so on
   bigCircles = [
+    //x larger, more to the right; y larger, more to the bottom
+    //scale factors for positions are set one by one roughly instead of using a loop and formulas, 
+    //if they are incorrect or inconvenient, tell me in the group chat
     new Circle(0.1, 0.05, r, colors[0]),
     new Circle(0.11, 0.43, r, colors[1]),
     new Circle(0.05, 0.8, r, colors[2]),
@@ -64,6 +68,7 @@ colors = [
     new Circle(0.9, 0.57, r, colors[14]),//15
     new Circle(0.87, 1, r, colors[15])//16
   ];
+
 //kate's pattern, dotted line circles
 kpatternColors = [
   color('#FFFFFF'),//4
@@ -83,35 +88,90 @@ kCircle = [
   new kCircles(bigCircles[15].xScale, bigCircles[15].yScale, r, kpatternColors[5])
   ]
 
-  // Small stroke circles with specified colors and locations
-  smallStrokeCircles = [
-  new SmallStrokeCircle(bigCircles[1], r * 0.4, null, color('#D43E8E'), 40, true), //  circle 2
-  new SmallStrokeCircle(bigCircles[1], r * 0.2, null, color('#879F88'), 25, true), //  circle 2
-  new SmallStrokeCircle(bigCircles[1], r * 0.1, null, color('#EF3D29'), 15, true), //  circle 2
-  new SmallStrokeCircle(bigCircles[2], r * 0.2, null, color(255), 3, true), //  circle 3
-  new SmallStrokeCircle(bigCircles[4], r * 0.2, null, color(255), 3, true), // circle 4
-  new SmallStrokeCircle(bigCircles[8], r * 0.2, null, color(255), 3, true), // circle 9
-  new SmallStrokeCircle(bigCircles[9], r * 0.2, null, color(255), 3, true), //  circle 10
-  new SmallStrokeCircle(bigCircles[11], r * 0.2, null, color(255), 3, true), //  circle 12
-  new SmallStrokeCircle(bigCircles[14], r * 0.2, null, color(255), 3, true),//  circle 15
-  new SmallStrokeCircle(bigCircles[15], r * 0.2, null, color(255), 3, true),// circle 16
-  new SmallStrokeCircle(bigCircles[1], r * 0.34, null, color('#F05641'), 15, false, true), //  circle 2
-  new SmallStrokeCircle(bigCircles[1], r * 0.4, null, color('#F05641'), 10, false, true), //  circle 2
-  ];
+    // Small strke circles with specified colors and locations
+    smallStrokeCircles = [
+    new SmallStrokeCircle(bigCircles[1], r * 0.4, null, color('#D43E8E'), 40, true), //  circle 2
+    new SmallStrokeCircle(bigCircles[1], r * 0.2, null, color('#879F88'), 25, true), //  circle 2
+    new SmallStrokeCircle(bigCircles[1], r * 0.1, null, color('#EF3D29'), 15, true), //  circle 2
+
+    new SmallStrokeCircle(bigCircles[2], r * 0.2, null, color('#BE479A'), 30, true), //  circle 3
+    new SmallStrokeCircle(bigCircles[2], r * 0.2, null, color('#F05656'), 15, true), //  circle 3
+    new SmallStrokeCircle(bigCircles[2], r * 0.07, null, color('#BE479A'), 30, true), //  circle 3
+    new SmallStrokeCircle(bigCircles[2], r * 0.07, null, color('#F05656'), 15, true), //  circle 3
+
+    new SmallStrokeCircle(bigCircles[4], r * 0.3, null, color('#F05641'), 15, true), // circle 5
+    new SmallStrokeCircle(bigCircles[4], r * 0.2, null, color('#D43E8E'), 15, true), // circle 5
+    new SmallStrokeCircle(bigCircles[4], r * 0.1, null, color('#F05641'), 15, true), // circle 5
+    new SmallStrokeCircle(bigCircles[4], r * 0.01, null, color('#42A959'), 15, true), // circle 5
+    
+    new SmallStrokeCircle(bigCircles[8], r * 0.4, null, color('#F05641'), 15, true), // circle 9
+    new SmallStrokeCircle(bigCircles[8], r * 0.3, null, color('#FFB6E3'), 10, true), // circle 9
+    new SmallStrokeCircle(bigCircles[8], r * 0.2, null, color('#F05641'), 15, true), // circle 9
+    new SmallStrokeCircle(bigCircles[8], r * 0.1, null, color('#FFB6E3'), 10, true), // circle 9
+
+    new SmallStrokeCircle(bigCircles[9], r * 0.1, null, color('#DA70AC'), 30, true), //  circle 10
+
+    new SmallStrokeCircle(bigCircles[10], r * 0.4, null, color('#D43E8E'), 40, true), //  circle 11
+    new SmallStrokeCircle(bigCircles[10], r * 0.2, null, color('#879F88'), 25, true), //  circle 11
+    new SmallStrokeCircle(bigCircles[10], r * 0.1, null, color('#EF3D29'), 15, true), //  circle 11
+
+    new SmallStrokeCircle(bigCircles[14], r * 0.2, null, color('#BE479A'), 30, true), //  circle 15
+    new SmallStrokeCircle(bigCircles[14], r * 0.2, null, color('#F05656'), 15, true), //  circle 15
+    new SmallStrokeCircle(bigCircles[14], r * 0.07, null, color('#BE479A'), 30, true), //  circle 15
+    new SmallStrokeCircle(bigCircles[14], r * 0.07, null, color('#F05656'), 15, true), //  circle 15
+   
+    new SmallStrokeCircle(bigCircles[11], r * 0.15, null, color('#DA70AC'), 30, true), //  circle 12
+    
+   
+    new SmallStrokeCircle(bigCircles[15], r * 0.4, null, color('#F05641'), 15, true), // circle 16
+    new SmallStrokeCircle(bigCircles[15], r * 0.3, null, color('#FFB6E3'), 10, true), // circle 16
+    new SmallStrokeCircle(bigCircles[15], r * 0.2, null, color('#F05641'), 15, true), // circle 16
+    new SmallStrokeCircle(bigCircles[15], r * 0.1, null, color('#FFB6E3'), 10, true), // circle 16
+   
+   
+    
+    new SmallStrokeCircle(bigCircles[1], r * 0.34, null, color('#F05641'), 15, false, true), //  circle 2
+    new SmallStrokeCircle(bigCircles[1], r * 0.4, null, color('#F05641'), 10, false, true), //  circle 2
+
+    new SmallStrokeCircle(bigCircles[9], r * 0.3, null, color('#D22C91'), 12, false, true), //  circle 10
+    new SmallStrokeCircle(bigCircles[9], r * 0.2, null, color('#DDD64E'), 8, false, true), //  circle 10
+
+    new SmallStrokeCircle(bigCircles[10], r * 0.34, null, color('#F05641'), 15, false, true), //  circle 11
+    new SmallStrokeCircle(bigCircles[10], r * 0.4, null, color('#F05641'), 10, false, true), //  circle 11
+
+    new SmallStrokeCircle(bigCircles[11], r * 0.3, null, color('#D22C91'), 12, false, true), //  circle 12
+    new SmallStrokeCircle(bigCircles[11], r * 0.2, null, color('#DDD64E'), 8, false, true), //  circle 12
+   
+    ];
+
+    whiteDotLayers = [
+      new WhiteDotLayers(bigCircles[5], 3, 18),
+      new WhiteDotLayers(bigCircles[7], 3, 12),
+      new WhiteDotLayers(bigCircles[9], 3, 12)
+    ]
+   yellowDotLayers = [
+      new YellowDotLayers(bigCircles[0], 3, 12),
+      new YellowDotLayers(bigCircles[2], 3, 14),
+      new YellowDotLayers(bigCircles[1], 4, 16),
+      new YellowDotLayers(bigCircles[4], 3, 12),
+      new YellowDotLayers(bigCircles[6], 4, 18),
+      new YellowDotLayers(bigCircles[12], 3, 16),
+      new YellowDotLayers(bigCircles[14], 4, 12),]
 
   // Define color palettes for concentric circles
   let concentricFiveLayerColors = [color('#199646'), color('#DF3E86'), color('#0C63AD'), color('#FDCE23'), color('#BFC3BF')];
-  let concentricThreeLayerColors = [color('#BFC3BF'), color('#FDCE23'), color('#0C63AD')];
+  let concentricThreeLayerColors1 = [color('#BFC3BF'), color('#FDCE23'), color('#DF3E86')];
+  let concentricThreeLayerColors2 = [color('#BFC3BF'), color('#FDCE23'), color('#0C63AD')];
 
   // Initialize concentric circles for bigCircles[3] and bigCircles[4]
-  concentricCircles.push(new ConcentricCircle(bigCircles[1], concentricFiveLayerColors));
+  concentricCircles.push(new ConcentricCircle(bigCircles[0], concentricFiveLayerColors));
+  concentricCircles.push(new ConcentricCircle(bigCircles[2], concentricFiveLayerColors));
   concentricCircles.push(new ConcentricCircle(bigCircles[3], concentricFiveLayerColors));
-  concentricCircles.push(new ConcentricCircle(bigCircles[4], concentricFiveLayerColors));
-  concentricCircles.push(new ConcentricCircle(bigCircles[7], concentricFiveLayerColors));
+  concentricCircles.push(new ConcentricCircle(bigCircles[6], concentricFiveLayerColors));
+  concentricCircles.push(new ConcentricCircle(bigCircles[12], concentricFiveLayerColors));
   concentricCircles.push(new ConcentricCircle(bigCircles[13], concentricFiveLayerColors));
-  concentricCircles.push(new ConcentricCircle(bigCircles[14], concentricFiveLayerColors));
-  concentricCircles.push(new ConcentricCircle(bigCircles[9], concentricThreeLayerColors));
-  concentricCircles.push(new ConcentricCircle(bigCircles[11], concentricThreeLayerColors));
+  concentricCircles.push(new ConcentricCircle(bigCircles[8], concentricThreeLayerColors1));
+  concentricCircles.push(new ConcentricCircle(bigCircles[10], concentricThreeLayerColors2));
 
   // Set up automatic rotation for layers
   setInterval(autoClock, stepInterval);
@@ -119,6 +179,8 @@ kCircle = [
 
 // Circle class for big circles
 class Circle {
+  //x and y scale based on the width and height
+  //thus the patterns can change with the size of the window 
   constructor(xScale, yScale, r, color) {
     this.xScale = xScale; 
     this.yScale = yScale; 
@@ -129,6 +191,7 @@ class Circle {
   display() {
     fill(this.color);
     noStroke();
+    //x and y actual position are width*scale factors
     let x = width * this.xScale;
     let y = height * this.yScale;
     ellipse(x, y, this.r);
@@ -228,7 +291,7 @@ drawDashedCircle(x, y, diameter) {
 
 // ConcentricCircle class with multiple layers and colors
 class ConcentricCircle {
-  constructor(parentCircle, colors) {
+  constructor(parentCircle, colors) {0
     this.parentCircle = parentCircle; // Associate with bigCircle
     this.colors = colors;
   }
@@ -249,28 +312,124 @@ class ConcentricCircle {
   }
 }
 
+// White dot layers class
+class WhiteDotLayers {
+  constructor(bigCircle, numLayers, numDots) {
+    this.bigCircle = bigCircle;
+    this.numLayers = numLayers;
+    this.numDots = numDots;
+   
+  }
+  display() {
+    let x = width * this.bigCircle.xScale;
+    let y = height * this.bigCircle.yScale;
+    for (let layer = 1; layer <= this.numLayers; layer++) {
+      let radius = this.bigCircle.r * 0.3 + layer * 30;
+      for (let i = 0; i < this.numDots; i++) {
+        let angle = TWO_PI / this.numDots * i;
+        let dotX = x + radius * cos(angle);
+        let dotY = y + radius * sin(angle);
+        fill(255);
+        noStroke();
+        ellipse(dotX, dotY, 20);
+      }
+    }
+  }
+}
+
+  // Yellow dot layers class
+  class YellowDotLayers {
+    constructor(bigCircle, numLayers, numDots) {
+      this.bigCircle = bigCircle;
+      this.numLayers = numLayers;
+      this.numDots = numDots;
+      
+    }
+  
+    display() {
+      let x = width * this.bigCircle.xScale;
+      let y = height * this.bigCircle.yScale;
+      fill('#fabd4d');
+      noStroke();
+      for (let layer = 1; layer <= this.numLayers; layer++) {
+        let radius = this.bigCircle.r * 0.20 + layer * 30;
+        for (let i = 0; i < this.numDots; i++) {
+          let angle = TWO_PI / this.numDots * i;
+          let dotX = x + radius * cos(angle);
+          let dotY = y + radius * sin(angle);
+          ellipse(dotX, dotY, 20);
+        }
+      }
+    }
+  }
+
 function draw() {
   background(255);
 
-  // Draw big circles
-  for (let circle of bigCircles) {
-    circle.display();
+  //check time interval has passed
+  //I calculated the increment of timer:
+  //draw() is called 60 times per second,
+  //the timer is incremented by x*60 in every calling of draw(),
+  //which means that to reach every second (1000ms),
+  //the increment of time x = 1000/60 ≈ 16.7ms could be the real-world time,
+  //however, I found deltaTime in p5.js(https://p5js.org/reference/p5/deltaTime/) so I changed it
+  //but I believe my calculation is correct:)
+  //timer += 16.7; 
+  timer += deltaTime;
+
+  //every 5 seconds, move to the next step
+  //and reset timer
+  if(timer > timeInterval){
+    currentStep = currentStep + 1;
+    timer = 0;
   }
 
+  //reset all step after totalstep finished
+  if(currentStep > totalStep){
+    currentStep = 0;
+  }
+
+  //sequences of pattern elements
+  if(currentStep >= 0){
+    // Draw big circles
+    for (let circle of bigCircles) {
+      circle.display();
+  }
+}
+
+  if(currentStep >= 1){
    //draw the dottedline circles
    for(let kcircles of kCircle){
     kcircles.display();
   }
+}
 
-  // Draw small stroke circles on top
-  for (let smallCircle of smallStrokeCircles) {
-    smallCircle.draw();
-  }
+  if(currentStep >= 2){
   // Draw concentric circles
   for (let concentric of concentricCircles) {
     concentric.display();
   }
 }
+
+  if(currentStep >= 3){
+  // Draw small stroke circles on top
+  for (let smallCircle of smallStrokeCircles) {
+    smallCircle.draw();
+  }
+}
+
+  if(currentStep >= 4){
+  for (let dotLayer of whiteDotLayers){ dotLayer.display();
+  }
+}
+  if(currentStep >= 5){
+  // Draw yellow dot layers
+  for (let dotLayer of yellowDotLayers) {dotLayer.display();
+  }
+}
+}
+
+
 
 function windowResized() {
   resizeCanvas(windowWidth, windowHeight);
